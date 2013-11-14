@@ -1,0 +1,8 @@
+Rtmpdump
+	http://rtmpdump.mplayerhq.hu/
+Ffmpeg
+	http://ffmpeg.zeranoe.com/builds/
+Avprobe
+	http://libav.org/download.html
+Curl
+	http://curl.haxx.se/download.html
