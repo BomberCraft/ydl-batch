@@ -7,37 +7,23 @@ set url_bversion=https://raw.github.com/BomberCraft/dl-batch/master/bat-version.
 set url_eversion=https://raw.github.com/BomberCraft/dl-batch/master/exe-version.txt
 set data=%APPDATA%\youtube-dl
 set ydir=%USERPROFILE%\Videos\youtube-dl
+set exec=%exec%
+set previous=%CD%
+set %param%=--verbose --console-title --ignore-error
 
 if NOT EXIST "%data%" (
 echo Youtube-dl n'est pas install‚ sur cet ordinateur.
 goto fin
 )
 
-reg query HKLM\SOFTWARE /f "Python"
-if %ERRORLEVEL% EQU 0 (
-reg query HKLM\SOFTWARE\Python /f "PythonCore"
-if %ERRORLEVEL% EQU 0 (
-reg query HKLM\SOFTWARE\Python\PythonCore /f "2.7"
-if %ERRORLEVEL% EQU 0 (
-reg query HKLM\SOFTWARE\Python\PythonCore\2.7 /f "PythonPath"
-if %ERRORLEVEL% EQU 0 (
-goto PythOk ))))
+call python.bat
 
-reg query HKCU\Software /f "Python"
-if %ERRORLEVEL% EQU 0 (
-reg query HKCU\Software\Python /f "PythonCore"
-if %ERRORLEVEL% EQU 0 (
-reg query HKCU\Software\Python\PythonCore /f "2.7"
-if %ERRORLEVEL% EQU 0 (
-reg query HKCU\Software\Python\PythonCore\2.7 /f "PythonPath"
-if %ERRORLEVEL% EQU 0 (
-goto PythOk ))))
-
-cls
-goto 0
+if %ERRORLEVEL%==0 goto 0
+if %ERRORLEVEL%==1 goto PythOk
 
 :0
-echo Python non install‚ ou pas a la bonne version‚ installer Python 2.7
+cls
+echo Python non install‚ ou pas a la bonne version‚ installer Python 2.7 ou sup‚rieur
 goto fin
 
 :PythOk
@@ -73,7 +59,7 @@ goto debut
 
 :classic
 set /p lien="Entrez le lien de la vid‚o: "
-"%data%\youtube-dl.py" -t -i "%lien%"
+"%data%\%exec%" %param% -t "%lien%"
 goto fin
 
 :special
@@ -82,7 +68,7 @@ set /p lien="Entrez le lien de la vid‚o: "
 if "%lien:~11,7%" NEQ "youtube" goto selse
 
 :soption
-"%data%\youtube-dl.py" -F "%lien%"
+"%data%\%exec%" -F "%lien%"
 set /p vformat="S‚lectionner le code format(premiŠre colonne): "
 
 :subtitle
@@ -90,7 +76,7 @@ set /p vformat="S‚lectionner le code format(premiŠre colonne): "
 
 if %ERRORLEVEL%==1 goto srt 
 
-"%data%\youtube-dl.py" -t -f %vformat% "%lien%"
+"%data%\%exec%" %param% -t -f %vformat% "%lien%"
 goto fin
 
 :srt
@@ -98,16 +84,19 @@ goto fin
 
 if %ERRORLEVEL%==1 goto lsrt  
 
-"%data%\youtube-dl.py" -t -f %vformat% --write-srt "%lien%"
+"%data%\%exec%" %param% -t -f %vformat% --write-sub "%lien%"
 goto fin
 
 :lsrt
-set /p lang="Choisiser la langue des sous-titres (utiliser IETF language tags: en, fr, ...): "
-"%data%\youtube-dl.py" -t -f %vformat% --write-srt --srt-lang "%lang%" "%lien%"
+"%data%\choice" /C:on /T:n,%timeout% "Afficher les langues disponible? (%timeout%s): "
+if %ERRORLEVEL%==1 "%data%\%exec%" %param% --list-subs "%lien%"
+
+set /p lang="Choisiser la langue des sous-titres (utiliser IETF language tags: en,fr,...): "
+"%data%\%exec%" %param% -t -f %vformat% --write-sub --sub-lang "%lang%" "%lien%"
 goto fin
 
 :selse
-"%data%\youtube-dl.py" -t "%lien%"
+"%data%\%exec%" %param% -t "%lien%"
 goto fin
 
 :audio
@@ -148,17 +137,17 @@ set /a quality=%ERRORLEVEL%-1
 "%data%\choice" /C:on /T:n,%timeout% "Conserver la vid‚o?(defaut:non)(%timeout%s): "
 if %ERRORLEVEL%==1 goto download-k
 
-"%data%\youtube-dl.py" -t -v -i --extract-audio --audio-format %format% --audio-quality %quality% "%lien%"
+"%data%\%exec%" %param% -t --extract-audio --audio-format %format% --audio-quality %quality% "%lien%"
 
 if %ERRORLEVEL% (
 echo.
 echo ProblŠme dans l'encodage de la bande audio
-echo.
+echo. )
 
 goto fin
 
 :download-k
-"%data%\youtube-dl.py" -t -v -i -k --extract-audio --audio-format %format% --audio-quality %quality% "%lien%"
+"%data%\%exec%" %param% -t -k --extract-audio --audio-format %format% --audio-quality %quality% "%lien%"
 goto fin
 
 :option
@@ -168,7 +157,7 @@ goto test_bversion
 echo Version du bat: %eversion%
 goto test_eversion
 :fin_etest
-"%data%\youtube-dl.py" --version > %data%\yversion.tmp
+"%data%\%exec%" --version > %data%\yversion.tmp
 set /p yversion=<%data%\yversion.tmp
 del %data%\yversion.tmp
 echo Version de youtube-dl: %yversion%
@@ -219,7 +208,7 @@ echo q. Quitter
 echo.
 
 if %ERRORLEVEL%==1 goto dspecial
-if %ERRORLEVEL%==2 start cmd /C "%data%\youtube-dl.py --help && pause"
+if %ERRORLEVEL%==2 start cmd /C "%data%\%exec% --help && pause"
 if %ERRORLEVEL%==3 start cmd /K "cd %data%"
 if %ERRORLEVEL%==4 goto debut
 if %ERRORLEVEL%==5 goto fin
@@ -227,7 +216,7 @@ goto divers
 
 :dspecial
 set /p argument="Choisisser le(s) argument(s) pour youtube-dl: "
-"%data%\youtube-dl.py" %argument%
+"%data%\%exec%" %argument%
 echo.
 goto divers
 
@@ -239,5 +228,5 @@ echo d‚sintallation termin‚e.
 goto fin
 
 :fin
-cd %USERPROFILE%
+cd %previous%
 pause
