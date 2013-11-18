@@ -7,7 +7,7 @@ set url_bversion=https://raw.github.com/BomberCraft/dl-batch/master/bat-version.
 set url_eversion=https://raw.github.com/BomberCraft/dl-batch/master/exe-version.txt
 set data=%APPDATA%\youtube-dl
 set ydir=%USERPROFILE%\Videos\youtube-dl
-set exec=%exec%
+set exec=youtube-dl.py
 set previous=%CD%
 set %param%=--verbose --console-title --ignore-error
 
@@ -65,7 +65,9 @@ goto fin
 :special
 :vformat
 set /p lien="Entrez le lien de la vid‚o: "
-if "%lien:~11,7%" NEQ "youtube" goto selse
+REM if "%lien:~11,7%" NEQ "youtube" goto selse
+findstr /C:"^http.*://youtube\." "%lien%"
+
 
 :soption
 "%data%\%exec%" -F "%lien%"
