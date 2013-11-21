@@ -1,7 +1,7 @@
 @echo off
 cls
-set bversion=18.11.2012-0
-set eversion=18.11.2012-0
+set bversion=21.11.2013-0
+set eversion=21.11.2013-0
 set timeout=10
 set url_bversion=https://raw.github.com/BomberCraft/ydl-batch/master/version/bat-version.txt
 set url_eversion=https://raw.github.com/BomberCraft/ydl-batch/master/version/exe-version.txt
@@ -63,7 +63,7 @@ goto fin
 :special
 :vformat
 set /p lien="Entrez le lien de la vid‚o: "
-"%data%\%exec%" -F "%lien%" 2>NULL
+"%data%\%exec%" -F "%lien%" 2>NUL
 if %ERRORLEVEL%==1 goto selse
 
 :soption
