@@ -20,8 +20,8 @@ if %py% NEQ 0 goto PythOk
 
 :0
 IF EXIST %data%\pypath.tmp del "%data%\pypath.tmp"
-return 0;
+exit /b 0;
 
 :PythOk
 IF EXIST %data%\pypath.tmp del "%data%\pypath.tmp"
-return 1;
+exit /b 1;
